@@ -1,0 +1,31 @@
+# Create an instance and connnect to it
+
+- create instance 'jxx-experiment`
+- connect to it using "connect" (to Terminal)
+
+# Set up and test your python environment
+
+$ pip install pipenv --user
+$ exit # You need to log out and log in for the next step to work
+# After logging back in, test python environment
+
+```
+user@jxx-experiment:~/nnet$ pipenv shell
+Launching subshell in virtual environment...
+exouser@jxx-experiment:~/nnet$  . /home/exouser/.local/share/virtualenvs/nnet-geTkWflR/bin/activate
+(nnet) exouser@jxx-experiment:~/nnet$ python
+Python 3.10.6 (main, Mar 10 2023, 10:55:28) [GCC 11.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> 2 + 2
+4
+>>> 
+(nnet) exouser@jxx-experiment:~/nnet$ exit
+exit
+exouser@jxx-experiment:~/nnet$ 
+```
+
+Note how the prompt changes when you enter and leave the
+Python virtual environment when you invoke `pipenv shell`
+or `exit`.
+
+
