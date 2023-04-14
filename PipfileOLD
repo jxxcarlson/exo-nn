@@ -7,10 +7,8 @@ name = "pypi"
 numpy = "*"
 matplotlib = "*"
 scikit-learn = "*"
-tensorflow = "*"
-tensorflow-datasets = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.7"
+python_version = "3.7.7"
