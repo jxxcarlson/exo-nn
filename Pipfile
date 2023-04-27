@@ -7,8 +7,10 @@ name = "pypi"
 numpy = "*"
 matplotlib = "*"
 scikit-learn = "*"
+keras = "*"
+tensorflow = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.10.10"
+python_version = "3.8.8"
