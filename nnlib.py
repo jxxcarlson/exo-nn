@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
+import csv
+
+# REFERENCE: https://towardsdatascience.com/an-introduction-to-neural-networks-with-implementation-from-scratch-using-python-da4b6a45c05b
 
 # The California Housing dataset is a popular machine learning dataset used for regression tasks. 
 # It contains information about housing in various districts of California, based on data from the 
@@ -25,20 +28,29 @@ from sklearn.metrics import mean_squared_error
 # So, the inputs for the California Housing dataset are 8 features, and the output is a single
 #  target value representing the median value of owner-occupied homes in a given district.
 
-
+# Activation function
 def relu(z):
     a = np.maximum(0,z)
     return a
 
+def softmax(z):
+    """Compute softmax values for each row of z."""
+    e_z = np.exp(z - np.max(z, axis=1, keepdims=True))
+    return e_z / np.sum(e_z, axis=1, keepdims=True)
+
+# Construct matrices Wi (the weights) and vectors Bi (the biases),
+# initializing them with rendom numbers
 def initialize_params(layer_sizes):
+    print("layer_sizes", layer_sizes)
     params = {}
     for i in range(1, len(layer_sizes)):
         params['W' + str(i)] = np.random.randn(layer_sizes[i], layer_sizes[i-1])*0.01
         params['B' + str(i)] = np.random.randn(layer_sizes[i],1)*0.01
+    print("params.keys()", params.keys())
     return params
 
 def forward_propagation(X_train, params):
-    layers = len(params)//2
+    layers = len(params)//2 # two params per layer (W and B)
     values = {}
     for i in range(1, layers+1):
         if i==1:
@@ -47,7 +59,7 @@ def forward_propagation(X_train, params):
         else:
             values['Z' + str(i)] = np.dot(params['W' + str(i)], values['A' + str(i-1)]) + params['B' + str(i)]
             if i==layers:
-                values['A' + str(i)] = values['Z' + str(i)]
+                values['A' + str(i)] = softmax(values['Z' + str(i)])
             else:
                 values['A' + str(i)] = relu(values['Z' + str(i)])
     return values
@@ -95,7 +107,7 @@ def model(X_train, Y_train, layer_sizes, num_iters, learning_rate):
         print('Cost at iteration ' + str(i+1) + ' = ' + str(cost) + '\n')
     return params
 
-def compute_accuracy(X_train, X_test, Y_train, Y_test, params):
+def compute_accuracy(X_train, X_test, Y_train, Y_test, params,layer_sizes ):
     values_train = forward_propagation(X_train.T, params)
     values_test = forward_propagation(X_test.T, params)
     train_acc = np.sqrt(mean_squared_error(Y_train, values_train['A' + str(len(layer_sizes)-1)].T))
@@ -107,22 +119,31 @@ def predict(X, params):
     predictions = values['A' + str(len(values)//2)].T
     return predictions
 
-data = fetch_california_housing()
-X,Y = data["data"], data["target"]
-X_train,X_test,Y_train,Y_test = train_test_split(X, Y, test_size = 0.2)           #split data into train and test sets in 80-20 ratio
-layer_sizes = [8, 5, 5, 1]                                                        #set layer sizes, do not change the size of the first and last layer 
+# Open the CSV file
+def read_csv(name):
+    with open(name, newline='') as csvfile:
 
+        # Create a CSV reader object
+        reader = csv.reader(csvfile, delimiter=',')
 
-print(X_train.shape) # (16512, 8) 
-print(X_test.shape)  # (4128, 8)
-print(Y_train.shape) # (16512,)
-print(Y_test.shape)  # (4128,)                 
-                   
-                                                                                
-num_iters = 10                                                                #set number of iterations over the training set(also known as epochs in batch gradient descent context)
-learning_rate = 0.03                                                              #set learning rate for gradient descent
-params = model(X_train, Y_train, layer_sizes, num_iters, learning_rate)           #train the model
-train_acc, test_acc = compute_accuracy(X_train, X_test, Y_train, Y_test, params)  #get training and test accuracy
-print('Root Mean Squared Error on Training Data = ' + str(train_acc))
-print('Root Mean Squared Error on Test Data = ' + str(test_acc))
+        # Initialize an empty list to store the rows
+        data = []
 
+        # Loop through each row in the CSV file
+        for row in reader:
+            # Append the row to the data list
+            data.append(row)
+
+        return data
+
+def slice_data(from_, to, data):
+    new_data = []
+    for row in data:
+        new_data.append(row[from_:to])
+    return new_data
+
+def list_to_float(list_):
+    return list(map(float,list_))
+
+def listlist_to_float(listlist):
+    return list(map(list_to_float, listlist))
